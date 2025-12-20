@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang='vi'>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài tâp hóa học ABC</title>
+
+  <!-- Sử dụng Google Fonts cho giao diện hiện đại -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$']] },
+      chtml: { scale: 0.9 },
+      svg: { fontCache: 'global' }
+    };
+    function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+      var draggable = document.getElementById(data);
+      var dropZone = ev.target;
+      while (dropZone && !dropZone.classList.contains("dropzone") && dropZone.tagName !== "BODY") {
+        dropZone = dropZone.parentNode;
+      }
+      if (!dropZone) return;
+      var label = dropZone.querySelector(".drop-label");
+      if (label) {
+         if (label.nextSibling) {
+           dropZone.insertBefore(draggable, label.nextSibling);
+         } else {
+           dropZone.appendChild(draggable);
+         }
+      } else {
+         dropZone.appendChild(draggable);
+      }
+    }
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+  </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .top-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+    .score-box {
+      background: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 1.1em;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.8em;
+      color: #333;
+    }
+    .header h2 {
+      margin: 10px 0 0;
+      font-size: 1.2em;
+      color: #777;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .section h2 {
+      font-size: 1.4em;
+      margin-bottom: 20px;
+      color: #4285f4;
+    }
+    .question {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #f2f2f2;
+    }
+    .question p {
+      margin: 0 0 10px 0;
+    }
+    .option {
+      margin: 5px 0;
+    }
+    .explanation {
+      margin-top: 10px;
+    }
+    button {
+      background: #4285f4;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button:hover { background: #307cf1; }
+    /* Drag and drop */
+    .drag-drop-container {
+      display: flex;
+      gap: 10px;
+    }
+    .drag-column, .drop-column {
+      flex: 1;
+      background: #fff;
+      border: 1px dashed #ccc;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .draggable-item {
+      background: #e8f0fe;
+      border: 1px solid #c6dafc;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      cursor: move;
+      text-align: center;
+    }
+    .dropzone {
+      min-height: 50px;
+      border: 1px dashed #aaa;
+      margin: 5px 0;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+    }
+    .drop-label {
+      font-weight: bold;
+      color: #555;
+    }
+    /* Updated CSS for blanks in Part IV */
+    .blank-container {
+      display: inline;
+    }
+    .blank-container input.auto-expand, .blank-container span {
+      white-space: normal;
+      min-width: 60px;
+      height: 25px;
+      font-size: 18px;
+      vertical-align: baseline;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+    }
+    mjx-container[jax="CHTML"][display="true"] {
+      margin-top: 0 !important;
+      margin-bottom: -1.5em !important;
+    }
+    /* Media query cho smartphone */
+    @media only screen and (max-width: 600px) {
+      body { padding: 10px; font-size: 16px; }
+      .container { padding: 15px; }
+      .header h1 { font-size: 1.8em; }
+      .header h2 { font-size: 1.2em; }
+      .score-box { font-size: 1em; padding: 8px 12px; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class='container'>
+    <div class='top-row'><div class='score-box' id='scoreDisplay'>Tổng số điểm:</div></div>
+    <div class='header'><h1>BÀI TẬP LIÊN KẾT CỘNG HÓA TRỊ</h1><h2>(HÓA HỌC ABC)</h2></div>
+<div class='section' id='part1' data-parttype='1'>
+<h2>Phần 1: Trắc nghiệm nhiều lựa chọn (có một phương án đúng)</h2>
+<div class='question' id='part1_q1'>
+<p><strong>Câu 1:</strong><br> <br>Liên kết cộng hóa trị là liên kết được hình thành giữa hai nguyên tử bằng</p>
+<div class='option'><label><input type='radio' name='part1_q1' value='A'> <strong>A.</strong>  một hay nhiều cặp electron chung.</label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='B'> <strong>B.</strong>  lực hút tĩnh điện giữa các ion trái dấu.</label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='C'> <strong>C.</strong>  sự cho và nhận electron hoàn toàn.</label></div>
+<div class='option'><label><input type='radio' name='part1_q1' value='D'> <strong>D.</strong>  các electron tự do di chuyển trong mạng tinh thể.</label></div>
+<div class='explanation' id='part1_q1_result' data-answer='A' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20%C4%90%C3%A2y%20l%C3%A0%20%C4%91%E1%BB%8Bnh%20ngh%C4%A9a%20c%C6%A1%20b%E1%BA%A3n%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B.%3Cbr%3EB%20sai%3A%20%C4%90%C3%A2y%20l%C3%A0%20%C4%91%E1%BB%8Bnh%20ngh%C4%A9a%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20ion.%3Cbr%3EC%20sai%3A%20S%E1%BB%B1%20cho%20-%20nh%E1%BA%ADn%20ho%C3%A0n%20to%C3%A0n%20electron%20d%E1%BA%ABn%20%C4%91%E1%BA%BFn%20h%C3%ACnh%20th%C3%A0nh%20ion%20d%C6%B0%C6%A1ng%20v%C3%A0%20ion%20%C3%A2m%20%28li%C3%AAn%20k%E1%BA%BFt%20ion%29.%3Cbr%3ED%20sai%3A%20%C4%90%C3%A2y%20l%C3%A0%20%C4%91%E1%BA%B7c%20%C4%91i%E1%BB%83m%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20kim%20lo%E1%BA%A1i.'></div>
+</div>
+<div class='question' id='part1_q2'>
+<p><strong>Câu 2:</strong><br> <br>Liên kết sigma (σ) được hình thành do sự xen phủ orbital như thế nào?</p>
+<div class='option'><label><input type='radio' name='part1_q2' value='A'> <strong>A.</strong>  Xen phủ bên.</label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='B'> <strong>B.</strong>  Xen phủ trục.</label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='C'> <strong>C.</strong>  Không có sự xen phủ.</label></div>
+<div class='option'><label><input type='radio' name='part1_q2' value='D'> <strong>D.</strong>  Xen phủ của các orbital d.</label></div>
+<div class='explanation' id='part1_q2_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20Li%C3%AAn%20k%E1%BA%BFt%20sigma%20h%C3%ACnh%20th%C3%A0nh%20khi%20v%C3%B9ng%20xen%20ph%E1%BB%A7%20n%E1%BA%B1m%20tr%C3%AAn%20%C4%91%C6%B0%E1%BB%9Dng%20n%E1%BB%91i%20t%C3%A2m%20hai%20nguy%C3%AAn%20t%E1%BB%AD%20%28xen%20ph%E1%BB%A7%20tr%E1%BB%A5c%29.%3Cbr%3EA%20sai%3A%20Xen%20ph%E1%BB%A7%20b%C3%AAn%20t%E1%BA%A1o%20ra%20li%C3%AAn%20k%E1%BA%BFt%20pi%20%28%CF%80%29.%3Cbr%3EC%20sai%3A%20Ph%E1%BA%A3i%20c%C3%B3%20xen%20ph%E1%BB%A7%20orbital%20m%E1%BB%9Bi%20h%C3%ACnh%20th%C3%A0nh%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B.%3Cbr%3ED%20sai%3A%20Orbital%20d%20c%C3%B3%20th%E1%BB%83%20tham%20gia%20nh%C6%B0ng%20kh%C3%B4ng%20%C4%91%E1%BA%B7c%20tr%C6%B0ng%20c%C6%A1%20b%E1%BA%A3n%20b%E1%BA%B1ng%20s%20v%C3%A0%20p%20trong%20ch%C6%B0%C6%A1ng%20tr%C3%ACnh%20l%E1%BB%9Bp%2010%20c%C6%A1%20b%E1%BA%A3n.'></div>
+</div>
+<div class='question' id='part1_q3'>
+<p><strong>Câu 3:</strong><br> <br>Trong phân tử Nitrogen (N₂), hai nguyên tử nitrogen liên kết với nhau bằng</p>
+<div class='option'><label><input type='radio' name='part1_q3' value='A'> <strong>A.</strong>  liên kết đơn.</label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='B'> <strong>B.</strong>  liên kết đôi.</label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='C'> <strong>C.</strong>  liên kết ba.</label></div>
+<div class='option'><label><input type='radio' name='part1_q3' value='D'> <strong>D.</strong>  liên kết ion.</label></div>
+<div class='explanation' id='part1_q3_result' data-answer='C' data-solution='%3Cbr%3EC%20%C4%91%C3%BAng%3A%20M%E1%BB%97i%20nguy%C3%AAn%20t%E1%BB%AD%20N%20%28nh%C3%B3m%20VA%29%20thi%E1%BA%BFu%203%20electron%20%C4%91%E1%BB%83%20%C4%91%E1%BA%A1t%20b%C3%A1t%20t%E1%BB%AD%2C%20n%C3%AAn%20ch%C3%BAng%20g%C3%B3p%20chung%203%20c%E1%BA%B7p%20electron%20t%E1%BA%A1o%20th%C3%A0nh%20li%C3%AAn%20k%E1%BA%BFt%20ba%20%28N%E2%89%A1N%29.%3Cbr%3EA%2C%20B%20sai%3A%20S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20electron%20g%C3%B3p%20chung%20kh%C3%B4ng%20%C4%91%E1%BB%A7%20%C4%91%E1%BB%83%20%C4%91%E1%BA%A1t%20c%E1%BA%A5u%20h%C3%ACnh%20b%E1%BB%81n.%3Cbr%3ED%20sai%3A%20Hai%20nguy%C3%AAn%20t%E1%BB%AD%20gi%E1%BB%91ng%20nhau%20kh%C3%B4ng%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20ion.'></div>
+</div>
+<div class='question' id='part1_q4'>
+<p><strong>Câu 4:</strong><br> <br>Hiệu độ âm điện (Δχ) giữa hai nguyên tử trong khoảng nào thì được coi là liên kết cộng hóa trị không phân cực?</p>
+<div class='option'><label><input type='radio' name='part1_q4' value='A'> <strong>A.</strong>  0 ≤ Δχ < 0,4.</label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='B'> <strong>B.</strong>  0,4 ≤ Δχ < 1,7.</label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='C'> <strong>C.</strong>  Δχ ≥ 1,7.</label></div>
+<div class='option'><label><input type='radio' name='part1_q4' value='D'> <strong>D.</strong>  Δχ < 0.</label></div>
+<div class='explanation' id='part1_q4_result' data-answer='A' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20Theo%20quy%20%C6%B0%E1%BB%9Bc%20thang%20Pauling.%3Cbr%3EB%20sai%3A%20Kho%E1%BA%A3ng%20n%C3%A0y%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B%20ph%C3%A2n%20c%E1%BB%B1c.%3Cbr%3EC%20sai%3A%20Kho%E1%BA%A3ng%20n%C3%A0y%20th%C6%B0%E1%BB%9Dng%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20ion.%3Cbr%3ED%20sai%3A%20Hi%E1%BB%87u%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20l%E1%BA%A5y%20gi%C3%A1%20tr%E1%BB%8B%20tuy%E1%BB%87t%20%C4%91%E1%BB%91i%20n%C3%AAn%20kh%C3%B4ng%20%C3%A2m.'></div>
+</div>
+<div class='question' id='part1_q5'>
+<p><strong>Câu 5:</strong><br> <br>Nguyên tử Hydrogen (Z=1) và Chlorine (Z=17) liên kết với nhau tạo thành phân tử HCl. Kiểu xen phủ nào diễn ra trong liên kết này?</p>
+<div class='option'><label><input type='radio' name='part1_q5' value='A'> <strong>A.</strong>  Xen phủ s - s.</label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='B'> <strong>B.</strong>  Xen phủ p - p.</label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='C'> <strong>C.</strong>  Xen phủ s - p.</label></div>
+<div class='option'><label><input type='radio' name='part1_q5' value='D'> <strong>D.</strong>  Xen phủ bên.</label></div>
+<div class='explanation' id='part1_q5_result' data-answer='C' data-solution='%3Cbr%3EC%20%C4%91%C3%BAng%3A%20H%20c%C3%B3%20orbital%20h%C3%B3a%20tr%E1%BB%8B%20l%C3%A0%201s%2C%20Cl%20c%C3%B3%20orbital%20h%C3%B3a%20tr%E1%BB%8B%20ch%C6%B0a%20gh%C3%A9p%20%C4%91%C3%B4i%20l%C3%A0%203p.%20S%E1%BB%B1%20xen%20ph%E1%BB%A7%20di%E1%BB%85n%20ra%20gi%E1%BB%AFa%20s%20v%C3%A0%20p.%3Cbr%3EA%20sai%3A%20Ch%E1%BB%89%20%C4%91%C3%BAng%20v%E1%BB%9Bi%20ph%C3%A2n%20t%E1%BB%AD%20H%E2%82%82.%3Cbr%3EB%20sai%3A%20%C4%90%C3%BAng%20v%E1%BB%9Bi%20c%C3%A1c%20ph%C3%A2n%20t%E1%BB%AD%20nh%C6%B0%20Cl%E2%82%82%2C%20F%E2%82%82%20%28halogen%29.%3Cbr%3ED%20sai%3A%20Xen%20ph%E1%BB%A7%20b%C3%AAn%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20pi%2C%20trong%20khi%20HCl%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20%28sigma%29.'></div>
+</div>
+<div class='question' id='part1_q6'>
+<p><strong>Câu 6:</strong><br> <br>Liên kết pi (π) kém bền hơn liên kết sigma (σ) vì:</p>
+<div class='option'><label><input type='radio' name='part1_q6' value='A'> <strong>A.</strong>  Vùng xen phủ nằm trên đường nối tâm hai hạt nhân.</label></div>
+<div class='option'><label><input type='radio' name='part1_q6' value='B'> <strong>B.</strong>  Diện tích xen phủ nhỏ hơn và nằm hai bên đường nối tâm.</label></div>
+<div class='option'><label><input type='radio' name='part1_q6' value='C'> <strong>C.</strong>  Các electron tham gia liên kết có năng lượng quá thấp.</label></div>
+<div class='option'><label><input type='radio' name='part1_q6' value='D'> <strong>D.</strong>  Độ âm điện của các nguyên tử tham gia quá lớn.</label></div>
+<div class='explanation' id='part1_q6_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20Do%20xen%20ph%E1%BB%A7%20b%C3%AAn%20%C3%ADt%20hi%E1%BB%87u%20qu%E1%BA%A3%20h%C6%A1n%20xen%20ph%E1%BB%A7%20tr%E1%BB%A5c%2C%20di%E1%BB%87n%20t%C3%ADch%20xen%20ph%E1%BB%A7%20nh%E1%BB%8F%20h%C6%A1n%20n%C3%AAn%20li%C3%AAn%20k%E1%BA%BFt%20y%E1%BA%BFu%20h%C6%A1n.%3Cbr%3EA%20sai%3A%20%C4%90%C3%A2y%20l%C3%A0%20%C4%91%E1%BA%B7c%20%C4%91i%E1%BB%83m%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20sigma.%3Cbr%3EC%2C%20D%20sai%3A%20Kh%C3%B4ng%20ph%E1%BA%A3i%20nguy%C3%AAn%20nh%C3%A2n%20tr%E1%BB%B1c%20ti%E1%BA%BFp%20d%E1%BA%ABn%20%C4%91%E1%BA%BFn%20%C4%91%E1%BB%99%20b%E1%BB%81n%20k%C3%A9m%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20pi.'></div>
+</div>
+<div class='question' id='part1_q7'>
+<p><strong>Câu 7:</strong><br> <br>Phát biểu nào sau đây đúng về năng lượng liên kết (Eb)?</p>
+<div class='option'><label><input type='radio' name='part1_q7' value='A'> <strong>A.</strong>  Năng lượng liên kết càng lớn, liên kết càng dễ bị phá vỡ.</label></div>
+<div class='option'><label><input type='radio' name='part1_q7' value='B'> <strong>B.</strong>  Năng lượng liên kết là năng lượng cần thiết để phá vỡ 1 mol liên kết ở thể khí.</label></div>
+<div class='option'><label><input type='radio' name='part1_q7' value='C'> <strong>C.</strong>  Năng lượng liên kết luôn có giá trị âm.</label></div>
+<div class='option'><label><input type='radio' name='part1_q7' value='D'> <strong>D.</strong>  Năng lượng liên kết không liên quan đến độ bền phân tử.</label></div>
+<div class='explanation' id='part1_q7_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20%C4%90%E1%BB%8Bnh%20ngh%C4%A9a%20chu%E1%BA%A9n%20c%E1%BB%A7a%20n%C4%83ng%20l%C6%B0%E1%BB%A3ng%20li%C3%AAn%20k%E1%BA%BFt.%3Cbr%3EA%20sai%3A%20N%C4%83ng%20l%C6%B0%E1%BB%A3ng%20c%C3%A0ng%20l%E1%BB%9Bn%20th%C3%AC%20li%C3%AAn%20k%E1%BA%BFt%20c%C3%A0ng%20b%E1%BB%81n%2C%20c%C3%A0ng%20kh%C3%B3%20ph%C3%A1%20v%E1%BB%A1.%3Cbr%3EC%20sai%3A%20N%C4%83ng%20l%C6%B0%E1%BB%A3ng%20li%C3%AAn%20k%E1%BA%BFt%20%28c%E1%BA%A7n%20cung%20c%E1%BA%A5p%20%C4%91%E1%BB%83%20ph%C3%A1%20v%E1%BB%A1%29%20lu%C3%B4n%20c%C3%B3%20gi%C3%A1%20tr%E1%BB%8B%20d%C6%B0%C6%A1ng.%3Cbr%3ED%20sai%3A%20N%C3%B3%20%C4%91%E1%BA%B7c%20tr%C6%B0ng%20tr%E1%BB%B1c%20ti%E1%BA%BFp%20cho%20%C4%91%E1%BB%99%20b%E1%BB%81n.'></div>
+</div>
+<div class='question' id='part1_q8'>
+<p><strong>Câu 8:</strong><br> <br>Cho độ âm điện: H=2,2; C=2,55; O=3,44; Cl=3,16. Liên kết trong phân tử nào sau đây phân cực mạnh nhất?</p>
+<div class='option'><label><input type='radio' name='part1_q8' value='A'> <strong>A.</strong>  CH₄.</label></div>
+<div class='option'><label><input type='radio' name='part1_q8' value='B'> <strong>B.</strong>  Cl₂.</label></div>
+<div class='option'><label><input type='radio' name='part1_q8' value='C'> <strong>C.</strong>  H₂O.</label></div>
+<div class='option'><label><input type='radio' name='part1_q8' value='D'> <strong>D.</strong>  HCl.</label></div>
+<div class='explanation' id='part1_q8_result' data-answer='C' data-solution='%3Cbr%3EC%20%C4%91%C3%BAng%3A%20Hi%E1%BB%87u%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20O-H%20%3D%203%2C44%20-%202%2C2%20%3D%201%2C24%20%28l%E1%BB%9Bn%20nh%E1%BA%A5t%20trong%20c%C3%A1c%20ph%C6%B0%C6%A1ng%20%C3%A1n%29.%3Cbr%3EA%20sai%3A%20C-H%20%3D%202%2C55%20-%202%2C2%20%3D%200%2C35%20%28kh%C3%B4ng%20ph%C3%A2n%20c%E1%BB%B1c%29.%3Cbr%3EB%20sai%3A%20Cl-Cl%20%3D%200%20%28kh%C3%B4ng%20ph%C3%A2n%20c%E1%BB%B1c%29.%3Cbr%3ED%20sai%3A%20H-Cl%20%3D%203%2C16%20-%202%2C2%20%3D%200%2C96%20%28nh%E1%BB%8F%20h%C6%A1n%20H-O%29.'></div>
+</div>
+<div class='question' id='part1_q9'>
+<p><strong>Câu 9:</strong><br> <br>Số lượng liên kết sigma (σ) và pi (π) trong một liên kết đôi là:</p>
+<div class='option'><label><input type='radio' name='part1_q9' value='A'> <strong>A.</strong>  2 liên kết σ.</label></div>
+<div class='option'><label><input type='radio' name='part1_q9' value='B'> <strong>B.</strong>  1 liên kết σ và 1 liên kết π.</label></div>
+<div class='option'><label><input type='radio' name='part1_q9' value='C'> <strong>C.</strong>  2 liên kết π.</label></div>
+<div class='option'><label><input type='radio' name='part1_q9' value='D'> <strong>D.</strong>  1 liên kết σ và 2 liên kết π.</label></div>
+<div class='explanation' id='part1_q9_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20C%E1%BA%A5u%20tr%C3%BAc%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i%20lu%C3%B4n%20g%E1%BB%93m%201%20th%C3%A0nh%20ph%E1%BA%A7n%20b%E1%BB%81n%20%28sigma%29%20v%C3%A0%201%20th%C3%A0nh%20ph%E1%BA%A7n%20k%C3%A9m%20b%E1%BB%81n%20h%C6%A1n%20%28pi%29.%3Cbr%3EA%20sai%3A%20Kh%C3%B4ng%20bao%20gi%E1%BB%9D%20c%C3%B3%202%20li%C3%AAn%20k%E1%BA%BFt%20sigma%20gi%E1%BB%AFa%202%20nguy%C3%AAn%20t%E1%BB%AD.%3Cbr%3EC%20sai%3A%20Li%C3%AAn%20k%E1%BA%BFt%20pi%20kh%C3%B4ng%20h%C3%ACnh%20th%C3%A0nh%20%C4%91%E1%BB%99c%20l%E1%BA%ADp%20n%E1%BA%BFu%20ch%C6%B0a%20c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20sigma.%3Cbr%3ED%20sai%3A%20%C4%90%C3%A2y%20l%C3%A0%20c%E1%BA%A5u%20tr%C3%BAc%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20ba.'></div>
+</div>
+<div class='question' id='part1_q10'>
+<p><strong>Câu 10:</strong><br> <br>Khi hình thành phân tử Fluorine (F₂) từ hai nguyên tử F (Z=9), sự xen phủ orbital nào đã xảy ra?</p>
+<div class='option'><label><input type='radio' name='part1_q10' value='A'> <strong>A.</strong>  Xen phủ trục p - p.</label></div>
+<div class='option'><label><input type='radio' name='part1_q10' value='B'> <strong>B.</strong>  Xen phủ bên p - p.</label></div>
+<div class='option'><label><input type='radio' name='part1_q10' value='C'> <strong>C.</strong>  Xen phủ trục s - s.</label></div>
+<div class='option'><label><input type='radio' name='part1_q10' value='D'> <strong>D.</strong>  Xen phủ trục s - p.</label></div>
+<div class='explanation' id='part1_q10_result' data-answer='A' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20Electron%20%C4%91%E1%BB%99c%20th%C3%A2n%20c%E1%BB%A7a%20F%20n%E1%BA%B1m%20%E1%BB%9F%20ph%C3%A2n%20l%E1%BB%9Bp%202p%2C%20n%C3%AAn%20hai%20orbital%202p%20s%E1%BA%BD%20xen%20ph%E1%BB%A7%20tr%E1%BB%A5c.%3Cbr%3EB%20sai%3A%20F%E2%82%82%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%2C%20kh%C3%B4ng%20c%C3%B3%20xen%20ph%E1%BB%A7%20b%C3%AAn.%3Cbr%3EC%20sai%3A%20Orbital%20s%20c%E1%BB%A7a%20F%20%C4%91%C3%A3%20b%C3%A3o%20h%C3%B2a%20%28l%E1%BB%9Bp%20trong%29.%3Cbr%3ED%20sai%3A%20C%E1%BA%A3%20hai%20nguy%C3%AAn%20t%E1%BB%AD%20%C4%91%E1%BB%81u%20d%C3%B9ng%20orbital%20p.%3Cbr%3EC%C3%A2u%2011%3A%20%3Cbr%3EPh%C3%A2n%20t%E1%BB%AD%20n%C3%A0o%20d%C6%B0%E1%BB%9Bi%20%C4%91%C3%A2y%20c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B%20kh%C3%B4ng%20ph%C3%A2n%20c%E1%BB%B1c%3F%3Cbr%3EA.%20NH%E2%82%83.%3Cbr%3EB.%20HBr.%3Cbr%3E%23C.%20O%E2%82%82.%3Cbr%3ED.%20H%E2%82%82S.%3Cbr%3E%3Cbr%3EC%20%C4%91%C3%BAng%3A%20Hai%20nguy%C3%AAn%20t%E1%BB%AD%20Oxygen%20gi%E1%BB%91ng%20nhau%20n%C3%AAn%20hi%E1%BB%87u%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20b%E1%BA%B1ng%200.%3Cbr%3EA%2C%20B%2C%20D%20sai%3A%20%C4%90%E1%BB%81u%20%C4%91%C6%B0%E1%BB%A3c%20t%E1%BA%A1o%20b%E1%BB%9Fi%20hai%20phi%20kim%20kh%C3%A1c%20nhau%20c%C3%B3%20hi%E1%BB%87u%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20thu%E1%BB%99c%20kho%E1%BA%A3ng%20ph%C3%A2n%20c%E1%BB%B1c.'></div>
+</div>
+<div class='question' id='part1_q11'>
+<p><strong>Câu 11:</strong><br> <br>Điều nào sau đây SAI khi nói về tính chất chung của hợp chất cộng hóa trị?</p>
+<div class='option'><label><input type='radio' name='part1_q11' value='A'> <strong>A.</strong>  Có thể tồn tại ở thể rắn, lỏng hoặc khí.</label></div>
+<div class='option'><label><input type='radio' name='part1_q11' value='B'> <strong>B.</strong>  Các chất có cực thường tan trong dung môi có cực.</label></div>
+<div class='option'><label><input type='radio' name='part1_q11' value='C'> <strong>C.</strong>  Luôn dẫn điện tốt ở mọi trạng thái.</label></div>
+<div class='option'><label><input type='radio' name='part1_q11' value='D'> <strong>D.</strong>  Nhiệt độ nóng chảy thường thấp hơn hợp chất ion.</label></div>
+<div class='explanation' id='part1_q11_result' data-answer='C' data-solution='%3Cbr%3EC%20l%C3%A0%20ph%C3%A1t%20bi%E1%BB%83u%20sai%3A%20H%E1%BA%A7u%20h%E1%BA%BFt%20c%C3%A1c%20ch%E1%BA%A5t%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B%20kh%C3%B4ng%20ph%C3%A2n%20li%20ra%20ion%20n%C3%AAn%20kh%C3%B4ng%20d%E1%BA%ABn%20%C4%91i%E1%BB%87n%20%28tr%E1%BB%AB%20m%E1%BB%99t%20s%E1%BB%91%20tr%C6%B0%E1%BB%9Dng%20h%E1%BB%A3p%20nh%C6%B0%20acid%20tan%20trong%20n%C6%B0%E1%BB%9Bc...%29.%3Cbr%3EA%2C%20B%2C%20D%20%C4%91%C3%BAng%3A%20%C4%90%C3%A2y%20l%C3%A0%20c%C3%A1c%20t%C3%ADnh%20ch%E1%BA%A5t%20v%E1%BA%ADt%20l%C3%BD%20th%C6%B0%E1%BB%9Dng%20th%E1%BA%A5y%20c%E1%BB%A7a%20ch%E1%BA%A5t%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B.'></div>
+</div>
+<div class='question' id='part1_q12'>
+<p><strong>Câu 12:</strong><br> <br>Trong phân tử Chlorine (Cl₂), mỗi nguyên tử Chlorine đã góp chung bao nhiêu electron?</p>
+<div class='option'><label><input type='radio' name='part1_q12' value='A'> <strong>A.</strong>  1 electron.</label></div>
+<div class='option'><label><input type='radio' name='part1_q12' value='B'> <strong>B.</strong>  2 electron.</label></div>
+<div class='option'><label><input type='radio' name='part1_q12' value='C'> <strong>C.</strong>  3 electron.</label></div>
+<div class='option'><label><input type='radio' name='part1_q12' value='D'> <strong>D.</strong>  7 electron.</label></div>
+<div class='explanation' id='part1_q12_result' data-answer='A' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20Cl%20nh%C3%B3m%20VIIA%2C%20c%C3%B3%207e%20l%E1%BB%9Bp%20ngo%C3%A0i%20c%C3%B9ng%2C%20thi%E1%BA%BFu%201e%20%C4%91%E1%BB%83%20%C4%91%E1%BA%A1t%20b%C3%A1t%20t%E1%BB%AD%20n%C3%AAn%20m%E1%BB%97i%20nguy%C3%AAn%20t%E1%BB%AD%20g%C3%B3p%201e%20chung.%3Cbr%3EB%2C%20C%20sai%3A%20Kh%C3%B4ng%20ph%C3%B9%20h%E1%BB%A3p%20quy%20t%E1%BA%AFc%20b%C3%A1t%20t%E1%BB%AD.%3Cbr%3ED%20sai%3A%207%20l%C3%A0%20s%E1%BB%91%20electron%20h%C3%B3a%20tr%E1%BB%8B%20ri%C3%AAng%2C%20kh%C3%B4ng%20ph%E1%BA%A3i%20s%E1%BB%91%20electron%20g%C3%B3p%20chung.'></div>
+</div>
+<div class='question' id='part1_q13'>
+<p><strong>Câu 13:</strong><br> <br>Trong phân tử C₂H₄ (CH₂=CH₂), giữa hai nguyên tử Carbon có bao nhiêu cặp electron dùng chung?</p>
+<div class='option'><label><input type='radio' name='part1_q13' value='A'> <strong>A.</strong>  1 cặp.</label></div>
+<div class='option'><label><input type='radio' name='part1_q13' value='B'> <strong>B.</strong>  2 cặp.</label></div>
+<div class='option'><label><input type='radio' name='part1_q13' value='C'> <strong>C.</strong>  3 cặp.</label></div>
+<div class='option'><label><input type='radio' name='part1_q13' value='D'> <strong>D.</strong>  4 cặp.</label></div>
+<div class='explanation' id='part1_q13_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20Gi%E1%BB%AFa%20hai%20nguy%C3%AAn%20t%E1%BB%AD%20C%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i%2C%20t%C6%B0%C6%A1ng%20%E1%BB%A9ng%20v%E1%BB%9Bi%202%20c%E1%BA%B7p%20electron%20d%C3%B9ng%20chung.%3Cbr%3EA%20sai%3A%20T%C6%B0%C6%A1ng%20%E1%BB%A9ng%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n.%3Cbr%3EC%20sai%3A%20T%C6%B0%C6%A1ng%20%E1%BB%A9ng%20li%C3%AAn%20k%E1%BA%BFt%20ba.%3Cbr%3ED%20sai%3A%20Kh%C3%B4ng%20t%E1%BB%93n%20t%E1%BA%A1i%20li%C3%AAn%20k%E1%BA%BFt%20t%C6%B0%20b%E1%BB%81n%20v%E1%BB%AFng%20th%C3%B4ng%20th%C6%B0%E1%BB%9Dng.'></div>
+</div>
+<div class='question' id='part1_q14'>
+<p><strong>Câu 14:</strong><br> <br>Yếu tố nào sau đây đặc trưng cho độ bền của liên kết?</p>
+<div class='option'><label><input type='radio' name='part1_q14' value='A'> <strong>A.</strong>  Độ phân cực.</label></div>
+<div class='option'><label><input type='radio' name='part1_q14' value='B'> <strong>B.</strong>  Trạng thái vật lý.</label></div>
+<div class='option'><label><input type='radio' name='part1_q14' value='C'> <strong>C.</strong>  Năng lượng liên kết.</label></div>
+<div class='option'><label><input type='radio' name='part1_q14' value='D'> <strong>D.</strong>  Khối lượng mol.</label></div>
+<div class='explanation' id='part1_q14_result' data-answer='C' data-solution='%3Cbr%3EC%20%C4%91%C3%BAng%3A%20N%C4%83ng%20l%C6%B0%E1%BB%A3ng%20li%C3%AAn%20k%E1%BA%BFt%20c%C3%A0ng%20l%E1%BB%9Bn%20th%C3%AC%20c%C3%A0ng%20c%E1%BA%A7n%20nhi%E1%BB%81u%20n%C4%83ng%20l%C6%B0%E1%BB%A3ng%20%C4%91%E1%BB%83%20ph%C3%A1%20v%E1%BB%A1%2C%20t%E1%BB%A9c%20l%C3%A0%20c%C3%A0ng%20b%E1%BB%81n.%3Cbr%3EA%2C%20B%2C%20D%20sai%3A%20C%C3%A1c%20y%E1%BA%BFu%20t%E1%BB%91%20n%C3%A0y%20kh%C3%B4ng%20ph%E1%BA%A3n%20%C3%A1nh%20tr%E1%BB%B1c%20ti%E1%BA%BFp%20%C4%91%E1%BB%99%20b%E1%BB%81n%20li%C3%AAn%20k%E1%BA%BFt.'></div>
+</div>
+<div class='question' id='part1_q15'>
+<p><strong>Câu 15:</strong><br> <br>Sự xen phủ bên của hai orbital p tạo thành liên kết nào?</p>
+<div class='option'><label><input type='radio' name='part1_q15' value='A'> <strong>A.</strong>  Liên kết sigma (σ).</label></div>
+<div class='option'><label><input type='radio' name='part1_q15' value='B'> <strong>B.</strong>  Liên kết pi (π).</label></div>
+<div class='option'><label><input type='radio' name='part1_q15' value='C'> <strong>C.</strong>  Liên kết ion.</label></div>
+<div class='option'><label><input type='radio' name='part1_q15' value='D'> <strong>D.</strong>  Liên kết hydro.</label></div>
+<div class='explanation' id='part1_q15_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20Tr%E1%BB%A5c%20c%E1%BB%A7a%202%20orbital%20song%20song%20v%E1%BB%9Bi%20nhau%20t%E1%BA%A1o%20n%C3%AAn%20s%E1%BB%B1%20xen%20ph%E1%BB%A7%20b%C3%AAn%20%28li%C3%AAn%20k%E1%BA%BFt%20pi%29.%3Cbr%3EA%20sai%3A%20Li%C3%AAn%20k%E1%BA%BFt%20sigma%20t%E1%BA%A1o%20b%E1%BB%9Fi%20xen%20ph%E1%BB%A7%20tr%E1%BB%A5c.%3Cbr%3EC%2C%20D%20sai%3A%20Kh%C3%B4ng%20li%C3%AAn%20quan%20%C4%91%E1%BA%BFn%20c%C6%A1%20ch%E1%BA%BF%20xen%20ph%E1%BB%A7%20orbital%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B.'></div>
+</div>
+<div class='question' id='part1_q16'>
+<p><strong>Câu 16:</strong><br> <br>Cho biết năng lượng liên kết H-H là 432 kJ/mol, Cl-Cl là 242 kJ/mol, H-Cl là 427 kJ/mol. Thứ tự độ bền liên kết tăng dần là:</p>
+<div class='option'><label><input type='radio' name='part1_q16' value='A'> <strong>A.</strong>  Cl₂ < H₂ < HCl.</label></div>
+<div class='option'><label><input type='radio' name='part1_q16' value='B'> <strong>B.</strong>  Cl₂ < HCl < H₂.</label></div>
+<div class='option'><label><input type='radio' name='part1_q16' value='C'> <strong>C.</strong>  H₂ < HCl < Cl₂.</label></div>
+<div class='option'><label><input type='radio' name='part1_q16' value='D'> <strong>D.</strong>  HCl < Cl₂ < H₂.</label></div>
+<div class='explanation' id='part1_q16_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20N%C4%83ng%20l%C6%B0%E1%BB%A3ng%20li%C3%AAn%20k%E1%BA%BFt%20c%C3%A0ng%20cao%20th%C3%AC%20c%C3%A0ng%20b%E1%BB%81n.%20S%E1%BA%AFp%20x%E1%BA%BFp%20theo%20gi%C3%A1%20tr%E1%BB%8B%3A%20242%20%28Cl%E2%82%82%29%20%3C%20427%20%28HCl%29%20%3C%20432%20%28H%E2%82%82%29.%3Cbr%3EA%2C%20C%2C%20D%20sai%3A%20S%E1%BA%AFp%20x%E1%BA%BFp%20sai%20th%E1%BB%A9%20t%E1%BB%B1%20gi%C3%A1%20tr%E1%BB%8B%20n%C4%83ng%20l%C6%B0%E1%BB%A3ng.'></div>
+</div>
+<div class='question' id='part1_q17'>
+<p><strong>Câu 17:</strong><br> <br>Liên kết ba bền hơn liên kết đôi và liên kết đơn chủ yếu do:</p>
+<div class='option'><label><input type='radio' name='part1_q17' value='A'> <strong>A.</strong>  Có 3 liên kết sigma rất bền.</label></div>
+<div class='option'><label><input type='radio' name='part1_q17' value='B'> <strong>B.</strong>  Tổng năng lượng liên kết lớn hơn.</label></div>
+<div class='option'><label><input type='radio' name='part1_q17' value='C'> <strong>C.</strong>  Độ dài liên kết dài hơn.</label></div>
+<div class='option'><label><input type='radio' name='part1_q17' value='D'> <strong>D.</strong>  Ít bị phân cực hơn.</label></div>
+<div class='explanation' id='part1_q17_result' data-answer='B' data-solution='%3Cbr%3EB%20%C4%91%C3%BAng%3A%20%C4%90%E1%BB%83%20ph%C3%A1%20v%E1%BB%A1%20li%C3%AAn%20k%E1%BA%BFt%20ba%20c%E1%BA%A7n%20ph%C3%A1%20v%E1%BB%A1%20c%E1%BA%A3%201%20li%C3%AAn%20k%E1%BA%BFt%20sigma%20v%C3%A0%202%20li%C3%AAn%20k%E1%BA%BFt%20pi%2C%20t%E1%BB%95ng%20n%C4%83ng%20l%C6%B0%E1%BB%A3ng%20c%E1%BA%A7n%20thi%E1%BA%BFt%20r%E1%BA%A5t%20l%E1%BB%9Bn.%3Cbr%3EA%20sai%3A%20Li%C3%AAn%20k%E1%BA%BFt%20ba%20g%E1%BB%93m%201%20sigma%20v%C3%A0%202%20pi.%3Cbr%3EC%20sai%3A%20Li%C3%AAn%20k%E1%BA%BFt%20ba%20ng%E1%BA%AFn%20h%C6%A1n%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20v%C3%A0%20%C4%91%C3%B4i.%3Cbr%3ED%20sai%3A%20%C4%90%E1%BB%99%20ph%C3%A2n%20c%E1%BB%B1c%20kh%C3%B4ng%20quy%E1%BA%BFt%20%C4%91%E1%BB%8Bnh%20ch%C3%ADnh%20%C4%91%E1%BA%BFn%20%C4%91%E1%BB%99%20b%E1%BB%81n%20trong%20so%20s%C3%A1nh%20n%C3%A0y.'></div>
+</div>
+<div class='question' id='part1_q18'>
+<p><strong>Câu 18:</strong><br> <br>Phân tử nào sau đây có chứa cả liên kết đơn và liên kết ba?</p>
+<div class='option'><label><input type='radio' name='part1_q18' value='A'> <strong>A.</strong>  Acetylene (C₂H₂).</label></div>
+<div class='option'><label><input type='radio' name='part1_q18' value='B'> <strong>B.</strong>  Carbon dioxide (CO₂).</label></div>
+<div class='option'><label><input type='radio' name='part1_q18' value='C'> <strong>C.</strong>  Methane (CH₄).</label></div>
+<div class='option'><label><input type='radio' name='part1_q18' value='D'> <strong>D.</strong>  Ethylene (C₂H₄).</label></div>
+<div class='explanation' id='part1_q18_result' data-answer='A' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20C%C3%B4ng%20th%E1%BB%A9c%20l%C3%A0%20H-C%E2%89%A1C-H%20%28c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20C-H%20v%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20ba%20C%E2%89%A1C%29.%3Cbr%3EB%20sai%3A%20Ch%E1%BB%89%20c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i%20%28O%3DC%3DO%29.%3Cbr%3EC%20sai%3A%20Ch%E1%BB%89%20c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n.%3Cbr%3ED%20sai%3A%20C%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20v%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i.'></div>
+</div>
+<div class='question' id='part1_q19'>
+<p><strong>Câu 19:</strong><br> <br>Trong liên kết đơn chỉ có</p>
+<div class='option'><label><input type='radio' name='part1_q19' value='A'> <strong>A.</strong>  một liên kết pi</label></div>
+<div class='option'><label><input type='radio' name='part1_q19' value='B'> <strong>B.</strong>  một liên kết sigma</label></div>
+<div class='option'><label><input type='radio' name='part1_q19' value='C'> <strong>C.</strong>  hai liên kết pi</label></div>
+<div class='option'><label><input type='radio' name='part1_q19' value='D'> <strong>D.</strong>  một sigma và một pi</label></div>
+<div class='explanation' id='part1_q19_result' data-answer='B' data-solution=''></div>
+</div>
+<div class='question' id='part1_q20'>
+<p><strong>Câu 20:</strong><br> <br>Liên kết ba gồm</p>
+<div class='option'><label><input type='radio' name='part1_q20' value='A'> <strong>A.</strong>  một sigma</label></div>
+<div class='option'><label><input type='radio' name='part1_q20' value='B'> <strong>B.</strong>  một sigma và một pi</label></div>
+<div class='option'><label><input type='radio' name='part1_q20' value='C'> <strong>C.</strong>  một sigma và hai pi</label></div>
+<div class='option'><label><input type='radio' name='part1_q20' value='D'> <strong>D.</strong>  ba sigma</label></div>
+<div class='explanation' id='part1_q20_result' data-answer='C' data-solution=''></div>
+</div>
+<div class='question' id='part1_q21'>
+<p><strong>Câu 21:</strong><br> <br>Khi phá vỡ liên kết hóa học thì<br></p>
+<div class='option'><label><input type='radio' name='part1_q21' value='A'> <strong>A.</strong>  giải phóng năng lượng</label></div>
+<div class='option'><label><input type='radio' name='part1_q21' value='B'> <strong>B.</strong>  không đổi năng lượng</label></div>
+<div class='option'><label><input type='radio' name='part1_q21' value='C'> <strong>C.</strong>  cần cung cấp năng lượng</label></div>
+<div class='option'><label><input type='radio' name='part1_q21' value='D'> <strong>D.</strong>  luôn tỏa nhiệt</label></div>
+<div class='explanation' id='part1_q21_result' data-answer='C' data-solution=''></div>
+</div>
+</div>
+<div class='section' id='part2' data-parttype='2'>
+<h2>Phần 2: Trắc nghiệm nhiều lựa chọn (có thể có nhiều đáp án đúng)</h2>
+<div class='question' id='part2_q1'>
+<p><strong>Câu 1:</strong><br> <br>Những phát biểu nào sau đây là ĐÚNG về liên kết cộng hóa trị?</p>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='A'> <strong>A.</strong>  Được hình thành chủ yếu giữa các nguyên tử phi kim.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='B'> <strong>B.</strong>  Luôn phân cực về phía nguyên tử có bán kính lớn hơn.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='C'> <strong>C.</strong>  Có thể được hình thành bởi sự xen phủ orbital nguyên tử.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q1' value='D'> <strong>D.</strong>  Cặp electron dùng chung chịu lực hút của hạt nhân cả hai nguyên tử.</label></div>
+<div class='explanation' id='part2_q1_result' data-answer='A,C,D' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20Phi%20kim%20c%C3%B3%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20cao%2C%20xu%20h%C6%B0%E1%BB%9Bng%20g%C3%B3p%20chung%20e.%3Cbr%3EC%20%C4%91%C3%BAng%3A%20B%E1%BA%A3n%20ch%E1%BA%A5t%20l%C3%A0%20s%E1%BB%B1%20xen%20ph%E1%BB%A7%20c%C3%A1c%20%C4%91%C3%A1m%20m%C3%A2y%20electron.%3Cbr%3ED%20%C4%91%C3%BAng%3A%20%C4%90%C3%A2y%20l%C3%A0%20l%E1%BB%B1c%20gi%E1%BB%AF%20cho%20li%C3%AAn%20k%E1%BA%BFt%20b%E1%BB%81n%20v%E1%BB%AFng.%3Cbr%3EB%20sai%3A%20Ph%C3%A2n%20c%E1%BB%B1c%20v%E1%BB%81%20ph%C3%ADa%20nguy%C3%AAn%20t%E1%BB%AD%20c%C3%B3%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n%20l%E1%BB%9Bn%20h%C6%A1n%2C%20kh%C3%B4ng%20nh%E1%BA%A5t%20thi%E1%BA%BFt%20l%C3%A0%20b%C3%A1n%20k%C3%ADnh%20l%E1%BB%9Bn%20h%C6%A1n.'></div>
+</div>
+<div class='question' id='part2_q2'>
+<p><strong>Câu 2:</strong><br> <br>Chọn các phân tử có chứa liên kết pi (π):</p>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='A'> <strong>A.</strong>  Oxygen (O₂).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='B'> <strong>B.</strong>  Nitrogen (N₂).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='C'> <strong>C.</strong>  Hydrogen (H₂).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q2' value='D'> <strong>D.</strong>  Ethene (C₂H₄).</label></div>
+<div class='explanation' id='part2_q2_result' data-answer='A,B,D' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20O%3DO%20%28c%C3%B3%201%20li%C3%AAn%20k%E1%BA%BFt%20pi%29.%3Cbr%3EB%20%C4%91%C3%BAng%3A%20N%E2%89%A1N%20%28c%C3%B3%202%20li%C3%AAn%20k%E1%BA%BFt%20pi%29.%3Cbr%3ED%20%C4%91%C3%BAng%3A%20CH%E2%82%82%3DCH%E2%82%82%20%28c%C3%B3%201%20li%C3%AAn%20k%E1%BA%BFt%20pi%29.%3Cbr%3EC%20sai%3A%20H-H%20ch%E1%BB%89%20c%C3%B3%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20%28sigma%29.'></div>
+</div>
+<div class='question' id='part2_q3'>
+<p><strong>Câu 3:</strong><br> <br>Những cặp orbital nào sau đây có thể xen phủ để tạo thành liên kết sigma (σ)?</p>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='A'> <strong>A.</strong>  Orbital s và orbital s.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='B'> <strong>B.</strong>  Orbital s và orbital p.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='C'> <strong>C.</strong>  Hai orbital p dọc theo trục nối tâm.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q3' value='D'> <strong>D.</strong>  Hai orbital p song song với nhau.</label></div>
+<div class='explanation' id='part2_q3_result' data-answer='A,B,C' data-solution='%3Cbr%3EA%2C%20B%2C%20C%20%C4%91%C3%BAng%3A%20%C4%90%E1%BB%81u%20l%C3%A0%20c%C3%A1c%20d%E1%BA%A1ng%20xen%20ph%E1%BB%A7%20tr%E1%BB%A5c%2C%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20sigma.%3Cbr%3ED%20sai%3A%20Hai%20orbital%20p%20song%20song%20xen%20ph%E1%BB%A7%20b%C3%AAn%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20pi.'></div>
+</div>
+<div class='question' id='part2_q4'>
+<p><strong>Câu 4:</strong><br> <br>Đặc điểm nào sau đây thuộc về liên kết sigma (σ)?</p>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='A'> <strong>A.</strong>  Vùng xen phủ nằm trên đường nối tâm hai hạt nhân.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='B'> <strong>B.</strong>  Kém bền hơn liên kết pi.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='C'> <strong>C.</strong>  Cho phép hai nguyên tử xoay quanh trục liên kết mà không phá vỡ liên kết.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q4' value='D'> <strong>D.</strong>  Luôn được hình thành trước liên kết pi giữa hai nguyên tử.</label></div>
+<div class='explanation' id='part2_q4_result' data-answer='A,C,D' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20%C4%90%E1%BB%8Bnh%20ngh%C4%A9a%20xen%20ph%E1%BB%A7%20tr%E1%BB%A5c.%3Cbr%3EC%20%C4%91%C3%BAng%3A%20Do%20%C4%91%E1%BB%91i%20x%E1%BB%A9ng%20tr%E1%BB%A5c%20n%C3%AAn%20c%C3%B3%20th%E1%BB%83%20xoay%20t%E1%BB%B1%20do.%3Cbr%3ED%20%C4%91%C3%BAng%3A%20Li%C3%AAn%20k%E1%BA%BFt%20%C4%91%E1%BA%A7u%20ti%C3%AAn%20h%C3%ACnh%20th%C3%A0nh%20lu%C3%B4n%20l%C3%A0%20sigma%2C%20c%C3%A1c%20li%C3%AAn%20k%E1%BA%BFt%20ti%E1%BA%BFp%20theo%20m%E1%BB%9Bi%20l%C3%A0%20pi.%3Cbr%3EB%20sai%3A%20Li%C3%AAn%20k%E1%BA%BFt%20sigma%20xen%20ph%E1%BB%A7%20l%E1%BB%9Bn%20h%C6%A1n%20n%C3%AAn%20b%E1%BB%81n%20h%C6%A1n%20pi.'></div>
+</div>
+<div class='question' id='part2_q5'>
+<p><strong>Câu 5:</strong><br> <br>Để so sánh độ bền của liên kết trong các phân tử halogen, người ta dựa vào:</p>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='A'> <strong>A.</strong>  Năng lượng liên kết.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='B'> <strong>B.</strong>  Độ dài liên kết.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='C'> <strong>C.</strong>  Trạng thái màu sắc.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q5' value='D'> <strong>D.</strong>  Tính tan trong nước.</label></div>
+<div class='explanation' id='part2_q5_result' data-answer='A,B' data-solution='%3Cbr%3EA%2C%20B%20%C4%91%C3%BAng%3A%20N%C4%83ng%20l%C6%B0%E1%BB%A3ng%20v%C3%A0%20%C4%91%E1%BB%99%20d%C3%A0i%20l%C3%A0%20hai%20%C4%91%E1%BA%A1i%20l%C6%B0%E1%BB%A3ng%20v%E1%BA%ADt%20l%C3%BD%20%C4%91%E1%BA%B7c%20tr%C6%B0ng%20tr%E1%BB%B1c%20ti%E1%BA%BFp%20cho%20%C4%91%E1%BB%99%20b%E1%BB%81n%20li%C3%AAn%20k%E1%BA%BFt.%3Cbr%3EC%2C%20D%20sai%3A%20L%C3%A0%20t%C3%ADnh%20ch%E1%BA%A5t%20v%E1%BA%ADt%20l%C3%BD%20v%C4%A9%20m%C3%B4%2C%20kh%C3%B4ng%20ph%E1%BA%A3n%20%C3%A1nh%20tr%E1%BB%B1c%20ti%E1%BA%BFp%20%C4%91%E1%BB%99%20b%E1%BB%81n%20li%C3%AAn%20k%E1%BA%BFt%20n%E1%BB%99i%20ph%C3%A2n%20t%E1%BB%AD.'></div>
+</div>
+<div class='question' id='part2_q6'>
+<p><strong>Câu 6:</strong><br> <br>Các phân tử nào sau đây có liên kết cộng hóa trị phân cực?</p>
+<div class='option'><label><input type='checkbox' name='part2_q6' value='A'> <strong>A.</strong>  Hydrogen chloride (HCl).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q6' value='B'> <strong>B.</strong>  Ammonia (NH₃).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q6' value='C'> <strong>C.</strong>  Chlorine (Cl₂).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q6' value='D'> <strong>D.</strong>  Carbon dioxide (CO₂).</label></div>
+<div class='explanation' id='part2_q6_result' data-answer='A,B,D' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%20H%20v%C3%A0%20Cl%20ch%C3%AAnh%20l%E1%BB%87ch%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n.%3Cbr%3EB%20%C4%91%C3%BAng%3A%20N%20v%C3%A0%20H%20ch%C3%AAnh%20l%E1%BB%87ch%20%C4%91%E1%BB%99%20%C3%A2m%20%C4%91i%E1%BB%87n.%3Cbr%3ED%20%C4%91%C3%BAng%3A%20M%E1%BA%B7c%20d%C3%B9%20ph%C3%A2n%20t%E1%BB%AD%20CO%E2%82%82%20kh%C3%B4ng%20ph%C3%A2n%20c%E1%BB%B1c%2C%20nh%C6%B0ng%20li%C3%AAn%20k%E1%BA%BFt%20C%3DO%20l%C3%A0%20li%C3%AAn%20k%E1%BA%BFt%20ph%C3%A2n%20c%E1%BB%B1c%20%28O%20h%C3%BAt%20e%20m%E1%BA%A1nh%20h%C6%A1n%20C%29.%3Cbr%3EC%20sai%3A%20Hai%20nguy%C3%AAn%20t%E1%BB%AD%20Cl%20gi%E1%BB%91ng%20nhau%2C%20kh%C3%B4ng%20ph%C3%A2n%20c%E1%BB%B1c.'></div>
+</div>
+<div class='question' id='part2_q7'>
+<p><strong>Câu 7:</strong><br> <br>Những điều kiện cơ bản để hình thành liên kết cộng hóa trị là:</p>
+<div class='option'><label><input type='checkbox' name='part2_q7' value='A'> <strong>A.</strong>  Các nguyên tử phải giống hệt nhau về số khối.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q7' value='B'> <strong>B.</strong>  Các nguyên tử tham gia thường là phi kim.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q7' value='C'> <strong>C.</strong>  Có sự dùng chung một hoặc nhiều cặp electron.</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q7' value='D'> <strong>D.</strong>  Hiệu độ âm điện giữa hai nguyên tử thường nhỏ hơn 1,7.</label></div>
+<div class='explanation' id='part2_q7_result' data-answer='B,C,D' data-solution='%3Cbr%3EB%2C%20C%2C%20D%20%C4%91%C3%BAng%3A%20%C4%90%C3%A2y%20l%C3%A0%20c%C3%A1c%20%C4%91%E1%BA%B7c%20%C4%91i%E1%BB%83m%20nh%E1%BA%ADn%20d%E1%BA%A1ng%20v%C3%A0%20b%E1%BA%A3n%20ch%E1%BA%A5t%20c%E1%BB%A7a%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B.%3Cbr%3EA%20sai%3A%20C%C3%A1c%20nguy%C3%AAn%20t%E1%BB%AD%20kh%C3%A1c%20nhau%20v%E1%BA%ABn%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20c%E1%BB%99ng%20h%C3%B3a%20tr%E1%BB%8B%20%28v%C3%AD%20d%E1%BB%A5%20HCl%29%2C%20%C4%91%E1%BB%93ng%20v%E1%BB%8B%20kh%C3%A1c%20s%E1%BB%91%20kh%E1%BB%91i%20v%E1%BA%ABn%20t%E1%BA%A1o%20li%C3%AAn%20k%E1%BA%BFt%20nh%C6%B0%20th%C6%B0%E1%BB%9Dng.'></div>
+</div>
+<div class='question' id='part2_q8'>
+<p><strong>Câu 8:</strong><br> <br>Các chất nào sau đây CHỈ chứa liên kết đơn trong phân tử?</p>
+<div class='option'><label><input type='checkbox' name='part2_q8' value='A'> <strong>A.</strong>  Methane (CH₄).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q8' value='B'> <strong>B.</strong>  Water (H₂O).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q8' value='C'> <strong>C.</strong>  Oxygen (O₂).</label></div>
+<div class='option'><label><input type='checkbox' name='part2_q8' value='D'> <strong>D.</strong>  Fluorine (F₂).</label></div>
+<div class='explanation' id='part2_q8_result' data-answer='A,B,D' data-solution='%3Cbr%3EA%20%C4%91%C3%BAng%3A%204%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20C-H.%3Cbr%3EB%20%C4%91%C3%BAng%3A%202%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20O-H.%3Cbr%3ED%20%C4%91%C3%BAng%3A%201%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C6%A1n%20F-F.%3Cbr%3EC%20sai%3A%20O%E2%82%82%20ch%E1%BB%A9a%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i%20%28O%3DO%29.%3Cbr%3E'></div>
+</div>
+</div>
+<div class='section' id='part3' data-parttype='3'>
+<h2>Phần 3: Trắc nghiệm trả lời ngắn</h2>
+<div class='question' id='part3_q1'>
+<p><strong>Câu 1:</strong><br> <br>Liên kết trong phân tử KCl có hiệu độ âm điện là 2,34 (K=0,82; Cl=3,16). Dựa vào thang độ âm điện của Pauling (mốc 1,7), đây là loại liên kết gì?</p>
+<div>Đáp án của bạn: <input type='text' id='part3_q1_input' class='auto-expand' style='width:60px; height:25px; font-size:18px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></div>
+<div class='explanation' id='part3_q1_result' data-answer=' Liên kết ion|| liên kết ion|| ion' data-solution=''></div>
+</div>
+<div class='question' id='part3_q2'>
+<p><strong>Câu 2:</strong><br> <br>Trong phân tử N₂, tổng số cặp electron dùng chung giữa hai nguyên tử Nitrogen là bao nhiêu? (Trả lời bằng số)</p>
+<div>Đáp án của bạn: <input type='text' id='part3_q2_input' class='auto-expand' style='width:60px; height:25px; font-size:18px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></div>
+<div class='explanation' id='part3_q2_result' data-answer=' 3' data-solution=''></div>
+</div>
+<div class='question' id='part3_q3'>
+<p><strong>Câu 3:</strong><br> <br>Phân tử CH₄ có tổng cộng bao nhiêu liên kết sigma (σ)? (Trả lời bằng số)</p>
+<div>Đáp án của bạn: <input type='text' id='part3_q3_input' class='auto-expand' style='width:60px; height:25px; font-size:18px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></div>
+<div class='explanation' id='part3_q3_result' data-answer=' 4' data-solution=''></div>
+</div>
+<div class='question' id='part3_q4'>
+<p><strong>Câu 4:</strong><br> <br>Cho giá trị độ âm điện của Hydrogen là 2,2 và Oxygen là 3,44. Tính hiệu độ âm điện của liên kết O-H trong phân tử nước. (Điền số thập phân)</p>
+<div>Đáp án của bạn: <input type='text' id='part3_q4_input' class='auto-expand' style='width:60px; height:25px; font-size:18px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></div>
+<div class='explanation' id='part3_q4_result' data-answer=' 1,24' data-solution='%20%3Cbr%3E%CE%94%CF%87%20%3D%20%7C3%2C44%20-%202%2C2%7C%20%3D%201%2C24.'></div>
+</div>
+<div class='question' id='part3_q5'>
+<p><strong>Câu 5:</strong><br> <br>Xét phân tử CO₂ có cấu tạo O=C=O. Biết năng lượng cần thiết để phá vỡ hoàn toàn 1 mol CO₂ thành các nguyên tử C và O là 1600 kJ. Tính năng lượng của một liên kết đôi C=O. (Chỉ ghi giá trị bằng số)</p>
+<div>Đáp án của bạn: <input type='text' id='part3_q5_input' class='auto-expand' style='width:60px; height:25px; font-size:18px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></div>
+<div class='explanation' id='part3_q5_result' data-answer=' 800' data-solution='%20%3Cbr%3EPh%C3%A2n%20t%E1%BB%AD%20O%3DC%3DO%20c%C3%B3%202%20li%C3%AAn%20k%E1%BA%BFt%20%C4%91%C3%B4i%20C%3DO.%20Eb%28C%3DO%29%20%3D%201600%20%3A%202%20%3D%20800%20kJ%2Fmol.%3Cbr%3E'></div>
+</div>
+</div>
+<div class='section' id='part4' data-parttype='4'>
+<h2>Phần 4: Trắc nghiệm điền khuyết</h2>
+<div class='question' id='part4_q1'>
+<p><strong>Câu 1:</strong><br> <br>Liên kết sigma (σ) bền hơn liên kết pi (π) vì vùng xen phủ orbital của liên kết sigma <span class='blank-container'><input type='text' id='part4_q1_blank1' data-answer=' lớn' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> hơn vùng xen phủ của liên kết pi.</p>
+<div class='explanation' id='part4_q1_result' data-solution=''></div>
+</div>
+<div class='question' id='part4_q2'>
+<p><strong>Câu 2:</strong><br> <br>Nếu cặp electron chung bị lệch về phía một nguyên tử, ta có liên kết cộng hóa trị <span class='blank-container'><input type='text' id='part4_q2_blank1' data-answer=' phân cực|| có cực' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span>. Nếu cặp electron chung nằm chính giữa hai nguyên tử, ta có liên kết cộng hóa trị <span class='blank-container'><input type='text' id='part4_q2_blank2' data-answer=' không phân cực|| không cực' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span>.</p>
+<div class='explanation' id='part4_q2_result' data-solution=''></div>
+</div>
+<div class='question' id='part4_q3'>
+<p><strong>Câu 3:</strong><br> <br>Trong cấu trúc của một liên kết ba, luôn tồn tại 1 liên kết <span class='blank-container'><input type='text' id='part4_q3_blank1' data-answer=' sigma|| σ' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> và 2 liên kết <span class='blank-container'><input type='text' id='part4_q3_blank2' data-answer=' pi|| π' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span></p>
+<div class='explanation' id='part4_q3_result' data-solution=''></div>
+</div>
+<div class='question' id='part4_q4'>
+<p><strong>Câu 4:</strong><br> <br>Năng lượng cần thiết để phá vỡ một mol liên kết xác định trong phân tử ở thể khí, tại 25 độ C và 1 bar, được gọi là <span class='blank-container'><input type='text' id='part4_q4_blank1' data-answer=' năng lượng liên kết|| năng lượng liên kết cộng hóa trị' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span>.</p>
+<div class='explanation' id='part4_q4_result' data-solution=''></div>
+</div>
+<div class='question' id='part4_q5'>
+<p><strong>Câu 5:</strong><br> <br>Phá vỡ liên kết là quá trình <span class='blank-container'><input type='text' id='part4_q5_blank1' data-answer=' thu|| nhận' class='auto-expand' style='width:60px;' oninput="var canvas=document.createElement('canvas');var context=canvas.getContext('2d');context.font=window.getComputedStyle(this).font;var textWidth=context.measureText(this.value).width;this.style.width=Math.max(60, textWidth+10)+'px';"></span> năng lượng.</p>
+<div class='explanation' id='part4_q5_result' data-solution=''></div>
+</div>
+</div>
+
+    <div style='text-align:center; margin-top:30px;'>
+      <button id='submitBtn' onclick='gradeQuiz();'>Nộp bài</button>
+    </div>
+    <script>
+      function gradeQuiz() {
+         let score = 0, total = 0;
+         document.querySelectorAll('.section').forEach(function(section) {
+           let partType = section.getAttribute('data-parttype');
+           section.querySelectorAll('.question').forEach(function(q) {
+             total++;
+             let qid = q.id;
+             let feedback = "";
+             if (partType === "1") {
+               let selected = q.querySelector('input[name="' + qid + '"]:checked');
+               let correct = q.querySelector('.explanation').getAttribute('data-answer');
+               if (!selected) {
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + correct + '</strong></span>';
+               } else if (selected.value === correct) {
+                 score++;
+                 feedback = '<span style="color:green;"><strong>Đúng (' + correct + ')</strong></span>';
+               } else {
+                 feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + correct + '</strong></span>';
+               }
+             } else if (partType === "2") {
+               let selectedList = q.querySelectorAll('input[name="' + qid + '"]:checked');
+               if (selectedList.length === 0) {
+                 let correct = q.querySelector('.explanation').getAttribute('data-answer');
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + correct + '</strong></span>';
+               } else {
+                 let userAnswers = [];
+                 selectedList.forEach(function(el) { userAnswers.push(el.value); });
+                 let correct = q.querySelector('.explanation').getAttribute('data-answer').split(',');
+                 userAnswers.sort(); correct.sort();
+                 if (userAnswers.join() === correct.join()) {
+                   score++;
+                   feedback = '<span style="color:green;"><strong>Đúng (' + correct.join(',') + ')</strong></span>';
+                 } else {
+                   feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + correct.join(',') + '</strong></span>';
+                 }
+               }
+             } else if (partType === "3") {
+               let inputElem = document.getElementById(qid + '_input');
+               let userInput = inputElem.value.trim();
+               let correctData = q.querySelector('.explanation').getAttribute('data-answer');
+               let accepted = correctData.split('||').map(s => s.trim());
+               if (!userInput) {
+                 feedback = '<span style="color:red;"><strong>Bạn chưa trả lời. Đáp án đúng: ' + accepted.join(' hoặc ') + '</strong></span>';
+               } else {
+                 if (accepted.includes(userInput)) {
+                   score++;
+                   feedback = '<span style="color:green;"><strong>Đúng</strong></span>';
+                   inputElem.style.color = 'green';
+                 } else {
+                   feedback = '<span style="color:red;"><strong>Sai. Đáp án đúng: ' + accepted.join(' hoặc ') + '</strong></span>';
+                   inputElem.style.color = 'red';
+                 }
+                 inputElem.style.fontWeight = 'bold';
+                 inputElem.disabled = true;
+               }
+             } else if (partType === "4") {
+               let inputs = q.querySelectorAll('input.auto-expand');
+               let blankResults = [];
+               inputs.forEach(function(inp, index) {
+                 let accepted = inp.getAttribute('data-answer').split('||').map(s => s.trim());
+                 let userAnswer = inp.value.trim();
+                 if (userAnswer !== "") {
+                   if (accepted.includes(userAnswer)) {
+                     blankResults.push({blank: index+1, correct: true, answer: userAnswer, accepted: accepted});
+                   } else {
+                     blankResults.push({blank: index+1, correct: false, answer: userAnswer, accepted: accepted});
+                   }
+                 } else {
+                   blankResults.push({blank: index+1, answered: false, accepted: accepted});
+                 }
+               });
+               inputs.forEach(function(inp, index) {
+                 let res = blankResults[index];
+                 if (res.answered === false) { }
+                 else {
+                   let span = document.createElement('span');
+                   span.style.fontWeight = 'bold';
+                   if (res.correct) {
+                     span.style.color = 'green';
+                     span.textContent = res.answer;
+                   } else {
+                     span.style.color = 'red';
+                     span.textContent = res.answer;
+                   }
+                   inp.parentNode.replaceChild(span, inp);
+                 }
+               });
+               let wrongBlanks = [];
+               let unansweredBlanks = [];
+               blankResults.forEach(function(r) {
+                 if (r.answered === false) { unansweredBlanks.push(r.blank); }
+                 else if (!r.correct) { wrongBlanks.push(r.blank); }
+               });
+               if (wrongBlanks.length === 0 && unansweredBlanks.length === 0) {
+                 feedback = '<span style="color:green; font-weight:bold;">Đúng</span>';
+                 score++;
+               } else {
+                 let answerList = "";
+                 blankResults.forEach(function(r) {
+                   answerList += r.blank + ') ' + r.accepted.join(', hoặc ') + '<br>';
+                 });
+                 feedback = '<span style="color:red; font-weight:bold;">Sai.';
+                 if (wrongBlanks.length > 0) {
+                   feedback += ' Bạn trả lời sai vị trí ' + wrongBlanks.join(', ') + '.';
+                 }
+                 if (unansweredBlanks.length > 0) {
+                   feedback += ' Bạn chưa trả lời vị trí ' + unansweredBlanks.join(', ') + '.';
+                 }
+                 feedback += '<br>Đáp án đúng là:<br>' + answerList + '</span>';
+               }
+             } else if (partType === "5") {
+               let correctForQuestion = true;
+               q.querySelectorAll('.dropzone').forEach(function(dropZone) {
+                 let expected = dropZone.getAttribute('data-expected').trim();
+                 let userItems = Array.from(dropZone.querySelectorAll('.draggable-item')).map(e => e.getAttribute('data-label')).sort();
+                 let expectedItems = expected ? expected.split(',').map(s => s.trim()).sort() : [];
+                 if (JSON.stringify(userItems) !== JSON.stringify(expectedItems)) {
+                   correctForQuestion = false;
+                 }
+               });
+               if (correctForQuestion) {
+                 feedback = '<span style="color:green; font-weight:bold;">Đúng</span>';
+                 score++;
+               } else {
+                 let answerPairs = q.querySelector('.explanation').getAttribute('data-answer-pairs');
+                 feedback = '<span style="color:red; font-weight:bold;">Sai. Đáp án đúng là:<br>' + answerPairs.replace(/ \|\| /g, "<br>") + '</span>';
+               }
+             }
+             let expl = q.querySelector('.explanation');
+             expl.innerHTML = feedback;
+             let encodedSolution = expl.getAttribute('data-solution');
+             let solution = encodedSolution ? decodeURIComponent(encodedSolution) : "";
+             let cleanedSolution = solution.replace(/<br\s*\/?>/gi, '').trim();
+             if (cleanedSolution !== "") {
+                 expl.innerHTML += '<div style="margin-top:10px;"><strong>Lời giải:</strong></div><div>' + solution + '</div>';
+             }
+             expl.style.display = "block";
+           });
+         });
+         document.getElementById('scoreDisplay').innerHTML = 'Tổng số điểm: ' + score + ' / ' + total;
+         document.querySelectorAll('input, select').forEach(function(inp) { inp.disabled = true; });
+         let sb = document.getElementById('submitBtn'); if(sb) sb.disabled = true;
+         MathJax.typesetPromise();
+      }
+    </script>
+  </div>
+</body>
+</html>
